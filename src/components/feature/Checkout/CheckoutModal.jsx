@@ -216,28 +216,13 @@ debugger
         console.log("auditDetails",await auditDetails.json())
          }
 
-await fetch(`${API_URL}/guest/${guestData?._id}`,{
-                method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },body: JSON.stringify({  roomId:roomData?._id,})
+      await fetch(`${API_URL}/guest/${guestData?._id}/checkout`,{
+                      method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },body: JSON.stringify({  roomId:roomData?._id,})
 
          })
-
-
-         
-
-
-      // Simulate API calls - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Mock API calls for checkout process
-      console.log('Checkout Data:', {
-        booking: bookingData,
-        guest: guestData,
-        room: roomData,
-        audit: formData.audit
-      });
 
       alert('Checkout completed successfully!');
       onClose();
