@@ -193,9 +193,9 @@ let totalCharges
   .map(result => result.value); 
         }
 
-debugger
+
          if( allProductAitemAuditValues){
-        debugger
+        
         const auditDetails=await fetch(`${API_URL}/audit`,{
                method: 'POST',
           headers: {
@@ -213,16 +213,28 @@ debugger
             note:formData?.audit?.notes,
            })
         })
-        console.log("auditDetails",await auditDetails.json())
-         }
 
-      await fetch(`${API_URL}/guest/${guestData?._id}/checkout`,{
+
+        if (!auditDetails.ok) {
+          throw new Error('Failed to create audit details');
+        }
+          
+           
+        await fetch(`${API_URL}/guest/${guestData?._id}/checkout`,{
                       method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },body: JSON.stringify({  roomId:roomData?._id,})
 
          })
+
+
+
+        console.log("auditDetails",await auditDetails.json())
+         }
+
+      
+      
 
       alert('Checkout completed successfully!');
       onClose();
