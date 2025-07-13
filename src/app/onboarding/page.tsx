@@ -1,13 +1,48 @@
-
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 "use client"
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, User, Calendar, ClipboardList, CheckCircle, AlertCircle, Eye, Edit3 } from 'lucide-react';
 import useFetch from '@/hooks/useFetcher';
 import { API_URL } from '@/utils/constants';
 
+interface NewErrors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  numberOfPeople?: string;
+  roomId?: string;
+  checkInTime?: string;
+  auditedBy?: string;
+}
+
 const GuestOnboardingSystem = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
+  interface FormDataType {
+    guest: {
+      name: string;
+      email: string;
+      phone: string;
+      numberOfPeople: number;
+    };
+    booking: {
+      roomId: string;
+      checkInTime: string;
+      checkOutTime: string;
+      duration: number;
+      totalCharges: number;
+    };
+    audit: {
+      auditType: string;
+      auditedBy: string;
+      items: any[];
+      totalCharges: number;
+      notes: string;
+    };
+  }
+
+  const [formData, setFormData] = useState<FormDataType>({
     // Guest Data
     guest: {
       name: '',
@@ -33,9 +68,8 @@ const GuestOnboardingSystem = () => {
     }
   });
 
-  const [errors, setErrors] = useState({
-    name:""
-  });
+const [errors, setErrors] = useState<NewErrors>({});
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const[roomProducts,setRoomProducts]=useState([])
@@ -92,9 +126,6 @@ const GuestOnboardingSystem = () => {
       }));
        console.log("initialAuditItems",initialAuditItems)
     }
-  
-   
-    
   },[formData.booking.roomId]
 )
 
@@ -112,31 +143,7 @@ useEffect(()=>{
 
   const conditionOptions = ['good', 'fair', 'damaged', 'broken'];
 
-  // // Initialize audit items when room is selected
-  // useEffect(() => {
-  //   if (formData.booking.roomId && formData.audit.items.length === 0) {
-  //     const initialAuditItems = roomProducts.map(product => ({
-  //       roomProductId: product.id,
-  //       productName: product.name,
-  //       conditionBefore: product.baseCondition,
-  //       conditionAfter: product.baseCondition,
-  //       quantity: 1,
-  //       notes: '',
-  //       chargeAmount: 0,
-  //       replacementCost: product.replacementCost
-  //     }));
-      
-  //     setFormData(prev => ({
-  //       ...prev,
-  //       audit: {
-  //         ...prev.audit,
-  //         items: initialAuditItems
-  //       }
-  //     }));
-  //   }
-  // }, [formData.booking.roomId, roomProducts]);
 
-  // Calculate total charges when audit items change
   useEffect(() => {
     const totalCharges = formData.audit.items.reduce((sum, item) => sum + item.chargeAmount, 0);
     setFormData(prev => ({
@@ -148,8 +155,8 @@ useEffect(()=>{
     }));
   }, [formData.audit.items]);
 
-  const validateStep = (step) => {
-    const newErrors = {};
+  const validateStep = (step: number) => {
+    const newErrors: NewErrors = {};
     
     switch (step) {
       case 1:
@@ -303,23 +310,17 @@ let RoomBookingDetails
   )
 );
 
-auditItemIds =  allProductAitemAudit
-  .filter(result => result.status === 'fulfilled' && result.value?._id) 
-  .map(result => result.value._id); 
+auditItemIds = allProductAitemAudit
+  .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+  .map(result => result.value?._id); 
 
+totalCharges = allProductAitemAudit
+  .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled' && result.value?._id)
+  .reduce((acc, curr) => acc + (curr.value ?? 0), 0);
 
-
-   totalCharges= allProductAitemAudit
-  .filter(result => result.status === 'fulfilled' && result.value?._id) 
-  .reduce((acc,curr) => 
-  {
-    return acc=+curr
-  },0); 
-
-    allProductAitemAuditValues= allProductAitemAudit
-  .filter(result => result.status === 'fulfilled') 
+allProductAitemAuditValues = allProductAitemAudit
+  .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled') 
   .map(result => result.value); 
-  console.log("auditItemIds",auditItemIds)
 
  }
 
